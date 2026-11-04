@@ -9722,6 +9722,9 @@ static int oplus_chg_2uart_pinctrl_init(struct oplus_chg_chip *chip)
 
 	chg = &chip->pmic_spmi.smb5_chip->chg;
 
+	if (IS_ERR_OR_NULL(chg->iio.chgid_v_chan))
+		return 0;
+
 	chg->chg_2uart_pinctrl = devm_pinctrl_get(chip->dev);
 
 	if (IS_ERR_OR_NULL(chg->chg_2uart_pinctrl)) {
@@ -10851,8 +10854,10 @@ static int oplus_chg_parse_custom_dt(struct oplus_chg_chip *chip)
 #endif /*OPLUS_FEATURE_CHG_BASIC*/
 
     oplus_usbtemp_adc_gpio_init(chip);
-    oplus_charger_int_gpio_init(chip);
-    oplus_input_pg_gpio_init(chip);
+	if (of_property_match_string(node, "pinctrl-names", "charger_int_default") >= 0)
+		oplus_charger_int_gpio_init(chip);
+	if (of_property_match_string(node, "pinctrl-names", "input_pg_default") >= 0)
+		oplus_input_pg_gpio_init(chip);
 
 	return rc;
 

@@ -421,6 +421,9 @@ static int opchg_bq27541_gpio_pinctrl_init(struct oplus_vooc_chip *chip)
 		return -EINVAL;
 	}
 
+	if (!gpio_is_valid(chip->vooc_gpio.mcu_ctrl_cp_gpio))
+		return 0;
+
 	chip->vooc_gpio.gpio_mcu_ctrl_cp_active =
 		pinctrl_lookup_state(chip->vooc_gpio.pinctrl, "mcu_ctrl_active");
 	if (IS_ERR_OR_NULL(chip->vooc_gpio.gpio_mcu_ctrl_cp_active)) {
@@ -2028,6 +2031,10 @@ void oplus_vooc_eint_unregister(struct oplus_vooc_chip *chip)
 void oplus_vooc_set_mcu_pps_mode(struct oplus_vooc_chip *chip, bool mode)
 {
 	int retval = 0, level = 0;
+
+	if (!gpio_is_valid(chip->vooc_gpio.mcu_ctrl_cp_gpio))
+		return;
+
 	mutex_lock(&chip->pinctrl_mutex);
 	if (mode) {
 		pinctrl_select_state(chip->vooc_gpio.pinctrl, chip->vooc_gpio.gpio_mcu_ctrl_cp_sleep);
@@ -2046,6 +2053,9 @@ void oplus_vooc_set_mcu_pps_mode(struct oplus_vooc_chip *chip, bool mode)
 int oplus_vooc_get_mcu_pps_mode(struct oplus_vooc_chip *chip)
 {
 	int level = 0;
+
+	if (!gpio_is_valid(chip->vooc_gpio.mcu_ctrl_cp_gpio))
+		return -ENODEV;
 
 	level = gpio_get_value(chip->vooc_gpio.mcu_ctrl_cp_gpio);
 	return level;

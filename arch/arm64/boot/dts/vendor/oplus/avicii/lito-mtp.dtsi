@@ -129,14 +129,14 @@
                         pins = "gpio4";
                         function = "normal";
                         output-high;
-                        power-source = <1>;     /* 1.8V input supply */
+                        power-source = <0>;
         };
 
         ship_sleep: ship_sleep {
                         pins = "gpio4";
                         function = "normal";
                         output-low;
-                        power-source = <1>;     /* 1.8V input supply */
+                        power-source = <0>;
         };
 };
 
@@ -572,7 +572,8 @@
                                                 "switch1_act_switch2_sleep", "switch1_sleep_switch2_act",
                                                 "clock_active","clock_sleep",
                                                 "data_active","data_sleep",
-                                                "reset_active","reset_sleep";
+                                                "reset_active","reset_sleep",
+						"charging_switch1_ctr1_active", "charging_switch1_ctr1_sleep";
                 pinctrl-0 = <&charging_switch1_active>;
                 pinctrl-1 = <&charging_switch1_sleep >;
                 pinctrl-2 = <&charging_switch1_active>;
@@ -585,6 +586,8 @@
                 pinctrl-9 = <&charging_data_sleep >;
                 pinctrl-10 = <&charging_reset_active >;
                 pinctrl-11 = <&charging_reset_sleep >;
+		pinctrl-12 = <&charging_switch1_active>;
+		pinctrl-13 = <&charging_switch1_sleep>;
 
                 qcom,charging_switch1-gpio = <&tlmm 4 0x00>;
 		qcom,charging_switch1_ctr1-gpio = <&tlmm 126 0x00>;
@@ -991,14 +994,7 @@
         };
 };
 
-&pm8150_gpios {
-	gpio1_adc_default: gpio1_adc_default {
-			   pins = "gpio3"; /* GPIO3 */
-			   function = "normal"; /* normal */
-			   bias-high-impedance; /* DISABLE GPIO03 for ADC*/
-			   bias-disable;
-	};
-};
+
 
 &pm8150l_gpios {
 	gpio8_adc_default: gpio8_adc_default {
@@ -1226,7 +1222,8 @@
                         pinctrl-3 = <&dischg_disable>;
                         pinctrl-4 = <&ship_active>;
                         pinctrl-5 = <&ship_sleep>;
-                        pinctrl-6 = <&gpio1_adc_default>;
+			/* Both USB NTC inputs use PM8150L; leave PM8150 GPIO3 alone. */
+			pinctrl-6 = <>;
                         pinctrl-7 = <&gpio8_adc_default>;
                         //pinctrl-12 = <&gpio5_adc_default>; // aboard - TODO
 };
