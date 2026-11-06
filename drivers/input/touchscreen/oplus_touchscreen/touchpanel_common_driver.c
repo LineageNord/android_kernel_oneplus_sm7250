@@ -7257,9 +7257,11 @@ static int init_parse_dts(struct device *dev, struct touchpanel_data *ts)
 			TPD_INFO(" Failed to get the low state pinctrl handle\n");
 		}
 
-		ts->hw_res.pin_set_nopull = pinctrl_lookup_state(ts->hw_res.pinctrl, "pin_set_nopull");
-		if (IS_ERR_OR_NULL(ts->hw_res.pin_set_nopull)) {
-			TPD_INFO("Failed to get the input state pinctrl handle\n");
+		if (of_property_match_string(np, "pinctrl-names", "pin_set_nopull") >= 0) {
+			ts->hw_res.pin_set_nopull = pinctrl_lookup_state(ts->hw_res.pinctrl, "pin_set_nopull");
+			if (IS_ERR_OR_NULL(ts->hw_res.pin_set_nopull)) {
+				TPD_INFO("Failed to get the input state pinctrl handle\n");
+			}
 		}
 	}
 	ts->hw_res.enable2v8_gpio = of_get_named_gpio(np, "enable2v8_gpio", 0);
