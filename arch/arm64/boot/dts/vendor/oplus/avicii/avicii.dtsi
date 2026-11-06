@@ -401,14 +401,14 @@
 		goodix,gpio_reset = <&tlmm 63 0x0>;
 
 		goodix,goodix_pwr_1 = <&pm8150_gpios 7 0x0>;
-		goodix,goodix_pwr_2 = <&pm8150_gpios 6 0x0>;
+
+		notify_tpinfo_flag = <0>;
 
 		ldo-supply = <&pm8150a_l9>; // pm660l_l5 for goodix_fp
 		pinctrl-names = "default";
         	pinctrl-0 = <&gpio_goodix_irq_default>;
-        	power-num = <2>;
+		power-num = <1>;
                 gpios = <&pm8150_gpios 7 0x00>,
-                        <&pm8150_gpios 6 0x00 >,
                         <&tlmm 112 0x00>;
 
        		power_source_1 {
@@ -416,11 +416,6 @@
             		power-name = "goodix,goodix_pwr_1";
             		delay-time = <0>;
         	};
-                power_source_2 {
-                        power-mode = <2>;
-                        power-name = "goodix,goodix_pwr_2";
-                        delay-time = <0>;
-                };
         };
 
 	oem_aboard_check:oem_aboard_check {
