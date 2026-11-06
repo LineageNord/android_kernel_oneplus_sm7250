@@ -1441,7 +1441,7 @@ static int msm_vidc_comm_update_ctrl(struct msm_vidc_inst *inst,
 	 * as a menu_skip_mask.
 	 */
 	rc = v4l2_ctrl_modify_range(ctrl, cap->min, cap->max,
-			is_menu ? ctrl->menu_skip_mask : cap->step_size,
+			is_menu ? ctrl->menu_skip_mask : max_t(u32, cap->step_size, 1),
 			cap->default_value);
 	if (rc) {
 		s_vpr_e(inst->sid,
