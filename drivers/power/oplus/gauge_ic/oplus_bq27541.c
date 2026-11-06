@@ -3197,7 +3197,7 @@ int bq27541_get_passedchg(int *val)
 	chip = gauge_ic;
 
 	if (atomic_read(&gauge_ic->suspended) == 1)
-		return rc;
+		return -EAGAIN;
 
 	/*enable block data control */
 	if(gauge_ic->batt_bq28z610) {
@@ -3240,7 +3240,7 @@ int bq27541_get_passedchg(int *val)
 	*val = v;
 
 	if (atomic_read(&gauge_ic->suspended) == 1)
-		return -1;
+		return -EAGAIN;
 out:
 	return rc;
 }

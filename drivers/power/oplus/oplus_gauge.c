@@ -732,10 +732,10 @@ int oplus_gauge_get_passedchg(int *val)
 	int ret;
 	if (!g_gauge_chip || !g_gauge_chip->gauge_ops
 		|| !g_gauge_chip->gauge_ops->get_passdchg) {
-		return 0;
+		return -ENODATA;
 	} else {
 		ret = g_gauge_chip->gauge_ops->get_passdchg(val);
-		if(ret) {
+		if (ret && ret != -EAGAIN) {
 			pr_err("%s: get passedchg error %d\n", __FUNCTION__, ret);
 		}
 		return ret;

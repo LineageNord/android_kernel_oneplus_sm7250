@@ -725,22 +725,24 @@ static int oplus_chg_voocphy_get_cp_vbat_deviation(void)
 	return vbat_deviation;
 }
 
-static void oplus_midas_chg_data_init(void)
+static int oplus_midas_chg_data_init(void)
 {
 	int val, ret;
+
+	if (!oplus_vooc_get_allow_reading())
+		return -EAGAIN;
+
+	ret = oplus_gauge_get_passedchg(&val);
+	if (ret) {
+		if (ret != -EAGAIN)
+			pr_err("%s: get passedchg error %d\n", __FUNCTION__, ret);
+		return ret;
+	}
+
 	midas_chg.accu_delta = 0;
 	midas_chg.reset_counts = 0;
-	if (oplus_vooc_get_allow_reading() == true) {
-		ret = oplus_gauge_get_passedchg(&val);
-		if (ret) {
-			pr_err("%s: get passedchg error %d\n", __FUNCTION__, val);
-			midas_chg.cali_passed_chg = midas_chg.passed_chg = 0;
-		} else {
-			midas_chg.cali_passed_chg = midas_chg.passed_chg = val;
-		}
-	} else {
-		pr_err("%s: not allow reading", __FUNCTION__);
-	}
+	midas_chg.cali_passed_chg = midas_chg.passed_chg = val;
+	return 0;
 }
 
 static void oplus_midas_chg_processing(struct oplus_chg_chip *chip)
@@ -749,8 +751,7 @@ static void oplus_midas_chg_processing(struct oplus_chg_chip *chip)
 	int val, ret = 0;
 
 	if (!inited) {
-		oplus_midas_chg_data_init();
-		inited = 1;
+		inited = !oplus_midas_chg_data_init();
 		return;
 	}
 
@@ -763,11 +764,13 @@ static void oplus_midas_chg_processing(struct oplus_chg_chip *chip)
 	if(oplus_vooc_get_allow_reading() == true) {
 		ret = oplus_gauge_get_passedchg(&val);
 		if (ret) {
-			pr_err("%s: get passedchg error %d\n", __FUNCTION__, val);
+			if (ret != -EAGAIN)
+				pr_err("%s: get passedchg error %d\n", __FUNCTION__, ret);
 			return;
 		}
 	} else {
 		pr_err("%s: not allow reading", __FUNCTION__);
+		return;
 	}
 	if (midas_chg.prev_chg_stat) {
 		/* re-init passedchg after charge */
