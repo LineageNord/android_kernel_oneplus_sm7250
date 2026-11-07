@@ -1519,11 +1519,7 @@ static int cam_ife_csid_csi2_irq_ctrl(
 			CSID_CSI2_RX_ERROR_UNBOUNDED_FRAME |
 			CSID_CSI2_RX_ERROR_CPHY_PH_CRC;
 
-		if (csid_hw->epd_supported == 1)
-			CAM_INFO(CAM_ISP,
-				"Disable CSID_CSI2_RX_ERROR_CPHY_EOT_RECEPTION for EPD");
-		else
-			val = val | CSID_CSI2_RX_ERROR_CPHY_EOT_RECEPTION;
+		val |= CSID_CSI2_RX_ERROR_CPHY_EOT_RECEPTION;
 
 		/* Enable the interrupt based on csid debug info set */
 		if (csid_hw->csid_debug & CSID_DEBUG_ENABLE_SOT_IRQ)
